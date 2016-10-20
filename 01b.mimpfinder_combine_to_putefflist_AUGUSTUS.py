@@ -1,7 +1,7 @@
 from datetime import datetime
 startTime = datetime.now()
 
-import sys, csv, os, re, subprocess
+import sys, os, re
 
 from Bio import SeqIO
 from Bio.Seq import Seq
@@ -9,7 +9,7 @@ from Bio.SeqRecord import SeqRecord
 from Bio.Alphabet import generic_dna
 from Bio.Alphabet import IUPAC
 from Bio.SeqFeature import SeqFeature, FeatureLocation
-from BCBio import GFF
+#from BCBio import GFF
 
 def MimpFinder(infile, sc_prefix, motiefje, motiefje_rc, datahandler, distance):
 	datahandler_list = []
@@ -96,8 +96,8 @@ def PredictGenes(datahandler, datahandler2, datahandler3a, datahandler3b, dataha
 	print '// Running Augustus 3.1...'
 	print AUGUSTUS_command
 	cline = AUGUSTUS_command+' --species=fusarium --singlestrand=true %s > %s' % (datahandler, datahandler2) #--singlestrand=true
-	subprocess.call(cline, shell=True)
-	
+	print(cline),os.system(cline)
+
 	in_seq_handle = open(datahandler)
 	seq_dict = SeqIO.to_dict(SeqIO.parse(in_seq_handle, "fasta"))
 	in_seq_handle.close()
@@ -215,7 +215,7 @@ def PredictGenes(datahandler, datahandler2, datahandler3a, datahandler3b, dataha
 def RunSignalP(datahandler3c, datahandler4, SignalPpath, SignalP_threshold): 
 	print '// Running SignalP 4.1...'
 	cline = SignalPpath+' -t euk -f summary -u %s %s > %s' % (SignalP_threshold, datahandler3c, datahandler4)
-	subprocess.call(cline, shell=True)
+	os.system(cline)
 
 
 def ParseSignalP(datahandler3a, datahandler3b, datahandler3c, datahandler4, datahandler5a, datahandler5b, datahandler5c, min_prot_len):

@@ -1,8 +1,7 @@
 from datetime import datetime
 startTime = datetime.now()
 
-import sys, csv, os, re, subprocess
-
+import sys, os, re
 
 from Bio import SeqIO
 from Bio.Seq import Seq
@@ -174,8 +173,8 @@ def OrfWriter(datahandler3, signalpfile, min_prot_len, proteinoutfile, SignalPpa
  
 def RunSignalP(datahandler3, signalpfile, organism, SignalPpath, SignalP_threshold):
 	print '// Running SignalP 4.1...'
-	cline = '/Users/Peter/Programming/signalp/signalp-4.1/signalp'+' -t %s -f summary -u %s %s > %s' % (organism, SignalP_threshold, datahandler3, signalpfile)
-	subprocess.call(cline, shell=True)
+	cline = SignalPpath+' -t %s -f summary -u %s %s > %s' % (organism, SignalP_threshold, datahandler3, signalpfile)
+	os.system(cline)
 
 
 def ExtractOrfToFasta(proteinsfasta, uberinfile, puteff_dnaseqs, genome, puteff_logfile, combined_puteff_fasta, combined_puteff_logfile, filecounter, nrofcompletemimps, nrofincompletemimps, combined_puteff_logfile2, sc_prefix):

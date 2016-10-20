@@ -1,5 +1,5 @@
 print('-------------------------------')
-print("//Executing R script for clustering and plotting into a tree")
+print("//Executing R script for clustering and plotting into a tree\n\n")
 
 args <- commandArgs(trailingOnly = TRUE)
 cat(args)
@@ -7,20 +7,15 @@ cat(args)
 suppressPackageStartupMessages(library(dendextend))
 library("gplots")
 library("ctc")
-library("colorspace")
-library("dendextend")
 library("extrafont")
 library("ade4")
 
 currentdir=getwd()
-#heatmap3path="/Users/Peter/Programming/python/_github/mimpsearch_hcluster/scripts/heatmap.3.R" 
 heatmap3path=args[1]
 source(heatmap3path)
 
 infile=args[2]
 outputdir=args[3]
-#infile = '/Users/Peter/Programming/python/_github/mimpsearch_hcluster/output_15.09.24_16h08m54/without_false_positives_2/03.blastn_presence_absence/blastn_presence_absence.txt' #args[2]
-#outputdir = '/Users/Peter/Programming/python/_github/mimpsearch_hcluster/output_15.09.24_16h08m54/without_false_positives_2/04.cluster_and_plot/' #args[3] 
 hierclust_plot = "hierclust_plot.pdf"
 
 distance_matrix_rows		= args[4]
@@ -38,13 +33,6 @@ clustering_method_cols	= args[7]
 #8 = Sokal & Sneath (1963) S13 coefficient of Gower & Legendre s8 = ad / sqrt((a + b)(a + c)(d + b)(d + c))
 #9 = Phi of Pearson S14 coefficient of Gower & Legendre s9 = (ad - bc) / sqrt((a + b)(a + c)(d + b)(d + c))
 #10 = S2 coefficient of Gower & Legendre S10 = a / (a + b + c + d)
-
-#distance_matrix_rows		= 'pearson'
-#clustering_method_rows	= 'average'
-#distance_matrix_cols		= 'pearson'
-#clustering_method_cols	= 'average'
-
-
 
 setwd(outputdir) #this folder should exist!
 outfile <- "blastn_presence_absence_reordered.txt"
@@ -89,8 +77,7 @@ write(hc2Newick(colcluster),file="cluster_cols.newick")
 
 #for the data matrix to be plotted ('data'), check if 'SIX' in name. In case this is true, plot that name.
 column_annotation = matrix("#dbdbdb", ncol=2, nrow = ncol(data))
-sixgenecodes <- list('MAPYSM','MAPYGIV','MKVALV','MQPLRI','MKLSAV','MLVSPI','<<thesearecubense','MAPYSM', 'MKLLWL', 'MFSKAI', 'MTRFHL', 'MHTEYLF', 'MLFKIAW', 'MRFLLLIA', 'MNLKALVV', 'MRFEYI', 'MKLALIA', 'MKYLYLL', 'MDRTHRG', 'MFVSPKA', 'MNLKALVV')
-sixgenecodes <- list('SIX')
+sixgenecodes <- list('SIX','MAPYSM','MAPYGIV','MKVALV','MQPLRI','MKLSAV','MLVSPI','MAPYSM', 'MKLLWL', 'MFSKAI', 'MTRFHL', 'MHTEYLF', 'MLFKIAW', 'MRFLLLIA', 'MNLKALVV', 'MRFEYI', 'MKLALIA', 'MKYLYLL', 'MDRTHRG', 'MFVSPKA', 'MNLKALVV')
 sixgene_list = list()
 for (name in sixgenecodes){
   sixgene_list[length(sixgene_list)+1] <- list(grep(name, colnames(data)))
@@ -112,30 +99,30 @@ colnames(column_annotation) <- c("SIX genes", "Secreted enzymes")
 #rownames(NA/NaN/Inf in foreign function call (arg 11)
 rownames(column_annotation) <- colnames(data)
 
-pdf(file=hierclust_plot, width=12, height=16, pointsize = 16, family="Arial")
+pdf(file=hierclust_plot, width=12, height=16, pointsize = 8, family="Arial") # default pointsize = 16
 
 heatmap.3(data, 
-          Rowv=dendrogram,
-          Colv=coldendrogram,
-          dendrogram="both", 
-          #col=colorpanel(10, low="#D0D8EE",high="#233F88"), 
-          col=colorpanel(10, low="#dbdbdb",high="#233F88"), 
-          key=FALSE, 
-          density.info="none", 
-          trace="none", 
-          labCol=colnames(data),
-          cexCol=.4,
-          sepcolor="#000000",
-          #rowsep=c(0, 9, 12,22, 28, 31, 32, 33, 49, 52, 54, 56, 57, 58, 59, 60, 61),
-          rowsep=c(0, 4,7,16,21,25,26,37,38,43,46,47,48,49,50,51,53,56,58,59,60,61),
-          #colsep=1:ncol(data),
-          #colsep=c(18,28, 45,59, 77),
-          main=title,
-          cex.main = 1,
-          margins=c(9,10),
-          #RowSideColors= myClusterSideBar
-          ColSideColors = column_annotation
+  Rowv=dendrogram,
+  Colv=coldendrogram,
+  dendrogram="both", 
+  #col=colorpanel(10, low="#D0D8EE",high="#233F88"), 
+  col=colorpanel(10, low="#dbdbdb",high="#233F88"), 
+  key=FALSE, 
+  density.info="none", 
+  trace="none", 
+  labCol=colnames(data),
+  #cexCol=4,
+  sepcolor="#000000",
+  #rowsep=c(0, 9, 12,22, 28, 31, 32, 33, 49, 52, 54, 56, 57, 58, 59, 60, 61),
+  #rowsep=c(0, 4,7,16,21,25,26,37,38,43,46,47,48,49,50,51,53,56,58,59,60,61),
+  #colsep=1:ncol(data),
+  #colsep=c(18,28, 45,59, 77),
+  main=title,
+  cex.main = 1,
+  margins=c(26,16), #default 9,10
+  #RowSideColors= myClusterSideBar
+  ColSideColors = column_annotation
 )
 dev.off()
 
-print('Finished R script for clustering and plotting..')
+print('Finished R script for clustering and plotting.')
