@@ -9,7 +9,6 @@ from Bio.SeqRecord import SeqRecord
 from Bio.Alphabet import generic_dna
 from Bio.Alphabet import IUPAC
 from Bio.SeqFeature import SeqFeature, FeatureLocation
-#from BCBio import GFF
 
 def MimpFinder(infile, sc_prefix, motiefje, motiefje_rc, datahandler, distance):
 	datahandler_list = []

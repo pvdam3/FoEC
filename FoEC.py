@@ -46,8 +46,9 @@ clustering_method_cols		= 'average'
 
 #######################################################################
 
-currentdir = os.path.dirname(os.path.realpath(__file__))
-default_outputdir = currentdir+'/output/output_'+starttime
+scriptdir = os.path.dirname(os.path.realpath(__file__))
+default_outputdir = scriptdir+'/output/output_'+starttime
+scriptname = format(__file__)
 
 usage = '\n'+'-'*20+'\npython Fo_effector_clustering.py -i [infolder] <options>\n'+'-'*20+'\n\
 This script will take a folder with genome fasta files, find mimps and mimp terminal inverted repeats \
@@ -87,14 +88,14 @@ else:
 
 if options.effector_fasta == None:
 	####[A. Identify mimp-terminal inverted repeats and find ORFs with a Signal Peptide within a downstream region]####
-	cline1a = ' '.join(['python', currentdir+'/01a.mimpfinder_combine_to_putefflist_MetStop.py', genomedir, outputdir, contigprefix, distance_MetStop, min_prot_len, max_prot_len, max_d2m, SignalPpath, SignalP_threshold])
+	cline1a = ' '.join(['python', scriptdir+'/01a.mimpfinder_combine_to_putefflist_MetStop.py', genomedir, outputdir, contigprefix, distance_MetStop, min_prot_len, max_prot_len, max_d2m, SignalPpath, SignalP_threshold])
 	print cline1a, os.system(cline1a)
 
 	if options.met_stop_prediction_only:
 		cline1b='No Augustus gene prediction will be executed.'
 		print cline1b
 	else:
-		cline1b = ' '.join(['python', currentdir+'/01b.mimpfinder_combine_to_putefflist_AUGUSTUS.py', genomedir, outputdir, contigprefix, AUGUSTUS_path, '--AUGUSTUS_CONFIG_PATH='+AUGUSTUS_CONFIG_path, distance_Augustus, min_prot_len, max_prot_len, max_d2m, SignalPpath, SignalP_threshold])
+		cline1b = ' '.join(['python', scriptdir+'/01b.mimpfinder_combine_to_putefflist_AUGUSTUS.py', genomedir, outputdir, contigprefix, AUGUSTUS_path, '--AUGUSTUS_CONFIG_PATH='+AUGUSTUS_CONFIG_path, distance_Augustus, min_prot_len, max_prot_len, max_d2m, SignalPpath, SignalP_threshold])
 		print cline1b, os.system(cline1b)
 
 
@@ -103,13 +104,13 @@ if options.effector_fasta == None:
 	all_putative_effectors_Augustus = outputdir+'/01.mimpfinder/'+genomefoldername+'_AugustusOut/all_putative_effectors.fasta'
 	leave_put_eff_identifiers_during_clustering = 'TRUE'
 
-	cline2a = ' '.join(['python', currentdir+'/02.cluster_putefflists.py', all_putative_effectors_MetStop, blastdatabasedir, leave_put_eff_identifiers_during_clustering, BLASTbindir])
+	cline2a = ' '.join(['python', scriptdir+'/02.cluster_putefflists.py', all_putative_effectors_MetStop, blastdatabasedir, leave_put_eff_identifiers_during_clustering, BLASTbindir])
 	print cline2a, os.system(cline2a)
 	if options.met_stop_prediction_only:
 		cline2b='No clustering of Augustus effectors necessary.'
 		print cline2b
 	else:
-		cline2b = ' '.join(['python', currentdir+'/02.cluster_putefflists.py', all_putative_effectors_Augustus, blastdatabasedir, leave_put_eff_identifiers_during_clustering, BLASTbindir])
+		cline2b = ' '.join(['python', scriptdir+'/02.cluster_putefflists.py', all_putative_effectors_Augustus, blastdatabasedir, leave_put_eff_identifiers_during_clustering, BLASTbindir])
 		print cline2b, os.system(cline2b)
 	# now, the outputs of both metstop and augustus are clustered.
 
@@ -131,7 +132,7 @@ if options.effector_fasta == None:
 
 	####[D. Cluster fasta file containing all concatenated effectors identified so that each effector occurs once in the list:]####
 	leave_put_eff_identifiers_during_clustering = 'FALSE'
-	cline2c = ' '.join(['python', currentdir+'/02.cluster_putefflists.py', all_putative_effectors_concatenated, blastdatabasedir, leave_put_eff_identifiers_during_clustering, BLASTbindir])
+	cline2c = ' '.join(['python', scriptdir+'/02.cluster_putefflists.py', all_putative_effectors_concatenated, blastdatabasedir, leave_put_eff_identifiers_during_clustering, BLASTbindir])
 	print cline2c, os.system(cline2c)
 	all_putative_effectors_concatenated_clustered = all_putative_effectors_concatenated.split('.fa')[0]+'_clustered.fasta'
 
@@ -140,7 +141,7 @@ else: #an own list of putative effectors was supplied to be blasted and clustere
 		all_putative_effectors_concatenated_clustered = options.effector_fasta
 
 ####[E. BLASTN for presence/absence scoring:]####
-cline3 = ' '.join(['python', currentdir+'/03.local_blast_clustered_putefflist_to_pres-abs_table.py', all_putative_effectors_concatenated_clustered, genomedir, blastdatabasedir, BLASTbindir, outputdir, PERC_IDENTITY_THRESH, BLAST_task, buildblastdb])
+cline3 = ' '.join(['python', scriptdir+'/03.local_blast_clustered_putefflist_to_pres-abs_table.py', all_putative_effectors_concatenated_clustered, genomedir, blastdatabasedir, BLASTbindir, outputdir, PERC_IDENTITY_THRESH, BLAST_task, buildblastdb])
 print cline3, os.system(cline3)
 cline3_output = outputdir+'/03.blastn_presence_absence/blastn_presence_absence.txt'
 
@@ -149,18 +150,55 @@ cline3_output = outputdir+'/03.blastn_presence_absence/blastn_presence_absence.t
 cline4_outputdir = outputdir+'/04.cluster_and_plot/'
 if not os.path.exists(cline4_outputdir):
 	os.makedirs(cline4_outputdir)
-cline4 = ' '.join(['Rscript', currentdir+'/04.cluster_and_plot_heatmap3.R', currentdir+'/heatmap.3.R', cline3_output, cline4_outputdir, distance_matrix_rows, clustering_method_rows, distance_matrix_cols, clustering_method_cols])
+cline4 = ' '.join(['Rscript', scriptdir+'/04.cluster_and_plot_heatmap3.R', scriptdir+'/heatmap.3.R', cline3_output, cline4_outputdir, distance_matrix_rows, clustering_method_rows, distance_matrix_cols, clustering_method_cols])
 print cline4, os.system(cline4)
 
 
 log_txt = open(outputdir+"/log_txt.txt", "w")
-if options.effector_fasta != None:
-	write_this = ' '.join(["distance_MetStop, distance_Augustus, min_prot_len, max_prot_len, max_d2m, SignalP_threshold, commands\n\n", distance_MetStop, distance_Augustus, min_prot_len, max_prot_len, max_d2m, SignalP_threshold, '\n\n', cline3, '\n\n', cline4])
+if options.effector_fasta != None: # when providing a set of effectors to be BLASTed and clustered:
+	write_this = "==[ Parameters that were set in FoEC.py: ]==\n"
+	write_this += "PERC_IDENTITY_THRESH:"+str(PERC_IDENTITY_THRESH)+"\n"
+	write_this += "BLAST_task:"+str(BLAST_task)+"\n"
+	write_this += "buildblastdb:"+str(buildblastdb)+"\n"
+	write_this += "distance_matrix_rows:"+str(distance_matrix_rows)+"\n"
+	write_this += "clustering_method_rows:"+str(clustering_method_rows)+"\n"
+	write_this += "distance_matrix_cols:"+str(distance_matrix_cols)+"\n"
+	write_this += "clustering_method_cols:"+str(clustering_method_cols)+"\n\n"
+
+	write_this += "==[ Commands that were executed: ]==\n"
+	write_this += "cline3\n"+str(cline3)+"\n\n"
+	write_this += "cline4\n"+str(cline4)+"\n\n"
 else:
-	write_this = ' '.join(["distance_MetStop, distance_Augustus, min_prot_len, max_prot_len, max_d2m, SignalP_threshold, commands\n\n", distance_MetStop, distance_Augustus, min_prot_len, max_prot_len, max_d2m, SignalP_threshold, '\n\n', cline1a, '\n\n', cline1b, '\n\n', cline2a, '\n\n', cline2b, '\n\n', clinecat, '\n\n', cline2c, '\n\n', cline3, '\n\n', cline4])
+	write_this = "==[ Parameters that were set in FoEC.py: ]==\n"
+	write_this += "distance_MetStop:"+str(distance_MetStop)+"\n"
+	write_this += "distance_Augustus:"+str(distance_Augustus)+"\n"
+	write_this += "min_prot_len:"+str(min_prot_len)+"\n"
+	write_this += "max_prot_len:"+str(max_prot_len)+"\n"
+	write_this += "max_d2m:"+str(max_d2m)+"\n"
+	write_this += "SignalP_threshold:"+str(SignalP_threshold)+"\n"
+	write_this += "PERC_IDENTITY_THRESH:"+str(PERC_IDENTITY_THRESH)+"\n"
+	write_this += "BLAST_task:"+str(BLAST_task)+"\n"
+	write_this += "buildblastdb:"+str(buildblastdb)+"\n"
+	write_this += "distance_matrix_rows:"+str(distance_matrix_rows)+"\n"
+	write_this += "clustering_method_rows:"+str(clustering_method_rows)+"\n"
+	write_this += "distance_matrix_cols:"+str(distance_matrix_cols)+"\n"
+	write_this += "clustering_method_cols:"+str(clustering_method_cols)+"\n\n"
+
+	write_this += "==[ Commands that were executed: ]==\n"
+	write_this += "cline1a\n"+str(cline1a)+"\n\n"
+	write_this += "cline1b\n"+str(cline1b)+"\n\n"
+	write_this += "cline2a\n"+str(cline2a)+"\n\n"
+	write_this += "cline2b\n"+str(cline2b)+"\n\n"
+	write_this += "clinecat\n"+str(clinecat)+"\n\n"
+	write_this += "cline2c\n"+str(cline2c)+"\n\n"
+	write_this += "cline3\n"+str(cline3)+"\n\n"
+	write_this += "cline4\n"+str(cline4)+"\n\n"
+copy_cline = "cp "+scriptdir+"/"+scriptname+" "+outputdir+"/"+scriptname
+os.system(copy_cline)
+write_this += "==[ A copy of the current version of FoEC.py script has also been saved to: ]==\n"
+write_this += outputdir+'/'+scriptname
 log_txt.write(write_this)
 log_txt.close()
-
 
 print '-----------------------'
 print '\n\nStarttime:', starttime

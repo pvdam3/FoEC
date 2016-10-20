@@ -1,8 +1,9 @@
 print('-------------------------------')
-print("//Executing R script for clustering and plotting into a tree\n\n")
+print("//Executing R script for clustering and plotting into a tree")
+
+options(warn=-1) #Set this value back to 0 if you want to display Rscript warnings in the terminal.
 
 args <- commandArgs(trailingOnly = TRUE)
-cat(args)
 
 suppressPackageStartupMessages(library(dendextend))
 library("gplots")
