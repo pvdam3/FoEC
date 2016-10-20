@@ -1,8 +1,8 @@
 # FoEC
 This script will take a folder with genome fasta files, find mimps and mimp terminal inverted repeats and try to identify candidate effectors. These will be clustered into families and then BLASTed against each of the genomes to identify presence (1) or absence (0). These binary patterns will be hierarchically clustered in R to produce a clustering figure using "heatmap.3.R".
 
-## Steps
-The following steps are executed in this pipeline:
+## Concept
+The following steps are executed in this pipeline (graphical overview available in [pipeline_overview.pdf](pipeline_overview.pdf)):
 
 1. Candidate effector identification in each of the provided genome fasta files:
   * Miniature Impala (mimp) terminal inverted repeat (TIR) identification based on regular expression of the consensus sequence of this repeat.
@@ -22,6 +22,7 @@ The following steps are executed in this pipeline:
   * The resulting matrix and tree are plotted using a script called heatmap.3.R (available on [GitHub](https://gist.github.com/nachocab/3853004))
 
 ## Usage
+Please first make sure to have all the dependencies installed (see below).
 Usage: 
 ```bash
 python FoEC.py -i [infolder] <options>
@@ -30,7 +31,18 @@ python FoEC.py -i [infolder] <options>
 Type `python FoEC.py -h` for a detailed help page including options.
 
 ## Dependencies
-The pipeline relies a number of different 3rd party programs and libraries including Augustus *(optional)* and BioPython.
+The pipeline relies a number of different 3rd party programs and libraries:
+* *(optional)*[AUGUSTUS](http://bioinf.uni-greifswald.de/augustus/)  
+* [SignalP](http://www.cbs.dtu.dk/cgi-bin/nph-sw_request?signalp)
+* [BLAST+](https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs&DOC_TYPE=Download)
+* R with the following libraries installed:
+  * dendextend
+  * gplots
+  * ctc
+  * extrafont
+  * ade4
+* Python with the following package installed:
+  * [BioPython](http://biopython.org/wiki/Download)
 
 ## References
 van Dam, P., Fokkens, L., Schmidt, S. M., Linmans, J. H. J., Kistler, H. C., Ma, L.-J., & Rep, M. (2016). Effector profiles distinguish <I>formae speciales </I>of <I>Fusarium oxysporum</I>. Environmental Microbiology. http://doi.org/10.1111/1462-2920.13445
