@@ -57,7 +57,7 @@ each of the genomes to identify presence (1) or absence (0). These binary patter
 clustered in R to produce a clustering figure using "heatmap.3.R". \n-Peter van Dam (Oct 2016)'
 parser = OptionParser(usage=usage)
 
-parser.add_option("-i", "--in", dest="infolder", help="provide a folder with genome fasta files")
+parser.add_option("-i", "--in", dest="infolder", help="provide a folder with genome fasta files. N.B. provide an ABSOLUTE path!")
 parser.add_option("-o", "--out", dest="outfolder", help="output folder; default is: "+default_outputdir)
 parser.add_option("-e", "--effector_fasta", dest="effector_fasta", help="Skip the effector prediction pipeline and go straight to blasting and clustering using a self-supplied effector list in fasta format.")
 parser.add_option("-m", "--met_stop_prediction_only", dest="met_stop_prediction_only", action="store_true", default=False,
