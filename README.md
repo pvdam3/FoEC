@@ -15,9 +15,11 @@ The following steps are executed in this pipeline (graphical overview available 
   * All records are combined into a concatenated fastafile containing all the identified sequences from step 1. This file will probably contain many duplicates.
   * A BLAST database is created from this file and each of the fasta records inside the file are BLASTed against this database. This creates a network of 'gene families', thereby essentially marking redundancy.
   * The longest record from each gene family is extracted and saved to a new fastafile, which should contain far fewer records due to the duplicate removal step.
+
 **3. Identifying presence-absence patterns in the genomes:**
   * The list of candidate effectors obtained in step 2 is used as a set of query sequences for BLASTing against a database of each of the genome fasta files. This will result (using some threshold values) in a binary presence or absence of each of the individual effector candidates in each of the genomes.
   * These binary values are stored in a table (.txt) with the effectors on one axis and the genomes on the other.
+
 **4. Hierarchical clustering of binary effector presence patterns:**
   * To discover which genomes are most alike in terms of effector pallette, binary table is imported in an R script, which applies hierarchical clustering on the rows and columns.
   * The resulting matrix and tree are plotted using a script called heatmap.3.R (available on [GitHub](https://gist.github.com/nachocab/3853004))
