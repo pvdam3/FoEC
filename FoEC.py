@@ -6,6 +6,7 @@ from optparse import OptionParser
 ####[EDIT THESE VARIABLES BEFORE RUNNING THE PIPELINE]####
 ##########################################################
 
+#paths
 blastdatabasedir			= '/Users/Peter/Documents/Sequences/Fo_genomes/blastdbs'
 contigprefix 				= 'contig_' 	# default: contig_
 AUGUSTUS_path 				= '/Users/Peter/Programming/augustus-3.1/bin/augustus'
