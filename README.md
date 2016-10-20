@@ -5,7 +5,8 @@ This script will take a folder with genome fasta files, find mimps and mimp term
 The following steps are executed in this pipeline:
 
 1. Miniature Impala (mimp) terminal inverted repeat (TIR) identification based on regular expression of the consensus sequence of this repeat.
-..* Test
+  * Test
+2. Following item
 
 ## Usage
 Usage: 
