@@ -10,6 +10,7 @@ The following steps are executed in this pipeline (graphical overview available 
   * Finding possible Open Reading Frames (ORFs) within this sequence using two methods; i) translating the sequence in three frames and finding the first Methionine (M) residue followed by a sequence of threshold length and a STOP codon or end of contig, or ii) using [AUGUSTUS](http://bioinf.uni-greifswald.de/augustus/) gene prediction. 
   * These translated sequences are feeded to SignalP to identify potentially secreted proteins.
   * The records that pass this criterium are saved.
+
 **2. Duplicate effector candidates are removed:**
   * All records are combined into a concatenated fastafile containing all the identified sequences from step 1. This file will probably contain many duplicates.
   * A BLAST database is created from this file and each of the fasta records inside the file are BLASTed against this database. This creates a network of 'gene families', thereby essentially marking redundancy.
