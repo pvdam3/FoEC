@@ -27,7 +27,8 @@ Usage:
 ```bash
 python FoEC.py -i [infolder] <options>
 ```
-(N.B. make sure to provide the **absolute** path to this folder!)
+N.B. make sure to provide the **absolute** path to this folder!
+
 Type `python FoEC.py -h` for a detailed help page including options.
 
 ## Dependencies
@@ -45,9 +46,9 @@ The pipeline relies a number of different 3rd party programs and libraries:
   * [BioPython](http://biopython.org/wiki/Download)
 
 ## Configuration
-You can set up the paths and variables necessary for your analysis in the [FoEC.py](FoEC.py) file.
+You can set up the paths and variables necessary for your analysis directly in the [FoEC.py](FoEC.py) file.
 
-###paths
+####paths
 * *blastdatabasedir* (a central location where you store your blast databases)
 * *contigprefix* (what string precedes the contig number in the fasta headers of your genome files? Suggestion: "contig_")
 * *AUGUSTUS_path* (direct path to your AUGUSTUS binary)
@@ -55,7 +56,7 @@ You can set up the paths and variables necessary for your analysis in the [FoEC.
 * *BLASTbindir* (where are your blast binaries stored?)
 * *SignalPpath* (direct path to your SignalP binary)
 
-###mimp-search variables
+####mimp-search variables
 * *distance_MetStop* (sequence downstream of motif used for ORF prediction; default = 2500)
 * *distance_Augustus* (sequence downstream of motif used for ORF prediction; default = 5000)
 * *min_prot_len* (in aa; default = 30)
@@ -63,12 +64,12 @@ You can set up the paths and variables necessary for your analysis in the [FoEC.
 * *max_d2m* (max distance between mimp TIR and start-codon; default = 2000)
 * *SignalP_threshold* (D-value; default = 0.550)
 
-###blast variables
+####blast variables
 * *PERC_IDENTITY_THRESH* (threshold percentage used to define if a candidate effector is present or absent, which is calculated as follows: the number of identical and correctly aligned nucleotides divided by the query length; default = 30)
 * *BLAST_task* ('blastn' or 'megablast')
 * *buildblastdb* (should a new blast db be built for the genome files encountered? (recommended for first time this script is run on a set of genomes) )
 
-###clustering variables:
+####clustering variables:
 * *distance_matrix_rows* (row distance matrix; default = 1)
 * *clustering_method_rows* (row clustering method; default = average)
 * *distance_matrix_cols* (col distance matrix; default = 1)
@@ -84,5 +85,6 @@ You can set up the paths and variables necessary for your analysis in the [FoEC.
   * 8 = Sokal & Sneath (1963) S13 coefficient of Gower & Legendre s8 = ad / sqrt((a + b)(a + c)(d + b)(d + c))
   * 9 = Phi of Pearson S14 coefficient of Gower & Legendre s9 = (ad - bc) / sqrt((a + b)(a + c)(d + b)(d + c))
   * 10 = S2 coefficient of Gower & Legendre S10 = a / (a + b + c + d)
+
 ## References
 van Dam, P., Fokkens, L., Schmidt, S. M., Linmans, J. H. J., Kistler, H. C., Ma, L.-J., & Rep, M. (2016). Effector profiles distinguish <I>formae speciales </I>of <I>Fusarium oxysporum</I>. Environmental Microbiology. http://doi.org/10.1111/1462-2920.13445
