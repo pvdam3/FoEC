@@ -7,8 +7,8 @@ The following steps are executed in this pipeline (graphical overview available 
 **1. Candidate effector identification in each of the provided genome fasta files:**
   * Miniature Impala (mimp) terminal inverted repeat (TIR) identification based on regular expression of the consensus sequence of this repeat.
   * Parsing a sequence (default 2500bp) downstream of this TIR.
-  * Finding possible Open Reading Frames (ORFs) within this sequence using two methods; i) translating the sequence in three frames and finding the first Methionine (M) residue followed by a sequence of threshold length and a STOP codon or end of contig, or ii) using [AUGUSTUS](http://bioinf.uni-greifswald.de/augustus/) gene prediction. 
-  * These translated sequences are feeded to SignalP to identify potentially secreted proteins.
+  * Finding possible Open Reading Frames (ORFs) within this sequence using two methods; i) translating the sequence in three frames and finding the first Methionine (M) residue followed by a sequence of threshold length (default 30 amino acids) and a STOP codon/end of contig, or ii) using [AUGUSTUS](http://bioinf.uni-greifswald.de/augustus/) gene prediction. 
+  * These translated sequences are fed to SignalP to identify potentially secreted proteins.
   * The records that pass this criterium are saved.
 
 **2. Duplicate effector candidates are removed:**
@@ -21,7 +21,7 @@ The following steps are executed in this pipeline (graphical overview available 
   * These binary values are stored in a table (.txt) with the effectors on one axis and the genomes on the other.
 
 **4. Hierarchical clustering of binary effector presence patterns:**
-  * To discover which genomes are most alike in terms of effector pallette, binary table is imported in an R script, which applies hierarchical clustering on the rows and columns.
+  * To discover which genomes are most alike in terms of effector pallette, the binary table is imported in an R script, which applies hierarchical clustering on the rows and columns.
   * The resulting matrix and tree are plotted using a script called heatmap.3.R (available on [GitHub](https://gist.github.com/nachocab/3853004))
 
 ## Usage
