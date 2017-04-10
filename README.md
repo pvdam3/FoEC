@@ -47,6 +47,7 @@ The pipeline relies a number of different 3rd party programs and libraries:
   * ade4
 * Python with the following package installed:
   * [BioPython](http://biopython.org/wiki/Download)
+  * BCBio
 
 ## Configuration
 You can set up the paths and variables necessary for your analysis directly in the [FoEC.py](FoEC.py) file.
