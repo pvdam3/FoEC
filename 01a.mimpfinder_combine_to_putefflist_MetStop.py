@@ -1,7 +1,7 @@
 from datetime import datetime
 startTime = datetime.now()
 
-import sys, os, re
+import sys, os, re, glob
 
 from Bio import SeqIO
 from Bio.Seq import Seq
@@ -9,10 +9,12 @@ from Bio.SeqRecord import SeqRecord
 from Bio.Alphabet import generic_dna
 from Bio.Alphabet import IUPAC
 
-def MimpFinder(infile, sc_prefix, motiefje, motiefje_rc, datahandler, distance):
+def MimpFinder(infile, sc_prefix, motiefje, motiefje_rc, datahandler, distance, mimpsequencesfile, infilename):
 	datahandler_list = []
 	nrofcompletemimps = 0
+	complete_mimp_counter = 0
 	nrofincompletemimps = 0
+	open(mimpsequencesfile,'w').close()
 	print '-'*20
 	for seq_record in SeqIO.parse(infile, 'fasta', IUPAC.ambiguous_dna):
 		print '// Analyzing \'%s\'... (%i bp long)' % (seq_record.description, len(seq_record))
@@ -44,19 +46,32 @@ def MimpFinder(infile, sc_prefix, motiefje, motiefje_rc, datahandler, distance):
 			i+=1
 
 			if m.start()-400 > 0:
-				region_to_find_TIR_mate = seq_record.seq[m.start()-400:m.start()]
+				region_to_find_TIR_mate_coord1 = m.start()-400
+				region_to_find_TIR_mate_coord2 = m.start()
+				region_to_find_TIR_mate = seq_record.seq[region_to_find_TIR_mate_coord1:region_to_find_TIR_mate_coord2]
 			else:
-				region_to_find_TIR_mate = seq_record.seq[0:m.start()]
+				region_to_find_TIR_mate_coord1 = 0
+				region_to_find_TIR_mate_coord2 = m.start()
+				region_to_find_TIR_mate = seq_record.seq[region_to_find_TIR_mate_coord1:region_to_find_TIR_mate_coord2]
 			match_TIR_mate = re.finditer(motiefje_rc, str(region_to_find_TIR_mate))
 			mimp_completeness = False
+			mimp_fasta_record = ''
 			for TIR_mate in match_TIR_mate:
 				mimp_completeness = True
+				location_of_mimp_coord1=region_to_find_TIR_mate_coord1+TIR_mate.start()
+				location_of_mimp_coord2=m.end()
+				mimp_sequence=seq_record.seq[location_of_mimp_coord1:location_of_mimp_coord2]
+
 			if mimp_completeness:
-				nrofcompletemimps+=0.5
+				nrofcompletemimps+=0.5 # 0.5 will also be added in the reverse complement part of the script
+				complete_mimp_counter+=1
+				mimp_fasta_record = '>'+infilename+'_mimp_'+str(complete_mimp_counter)+' _contig_'+new_id+'('+str(location_of_mimp_coord1)+':'+str(location_of_mimp_coord2)+')\n'+str(mimp_sequence)+'\n'
+				with open(mimpsequencesfile,'a') as mimpsequencesfilewriter:
+					mimpsequencesfilewriter.write(mimp_fasta_record)
 			else:
 				nrofincompletemimps+=1
 
-			
+
 		for m in match_rc:
 			if m.start() <= distance: #ensure that no negative value will arise 
 				start_pos_before_mimp = 0
@@ -89,6 +104,7 @@ def MimpFinder(infile, sc_prefix, motiefje, motiefje_rc, datahandler, distance):
 	nrofcompletemimps=int(nrofcompletemimps)
 	print '\n// Wrote %s %sbp regions downstream of mimp IR motif to %s' % (nrofcompletemimps, distance, datahandler)
 	return nrofcompletemimps, nrofincompletemimps
+
 
 def Translator(infile, datahandler2, distance):
 	datahandler_list2 = []
@@ -250,6 +266,7 @@ def MainDef(genomefastafile, directory, folder, combined_puteff_fasta, combined_
 	outdirectory	= combined_puteff_dir+infilename+'_mimpfinder_out/'
 	if not os.path.exists(outdirectory):
 		os.makedirs(outdirectory)
+	mimpsequencesfile = outdirectory+infilename+'_0_mimpfinder_completemimpsequences.fasta'
 	datahandler		= outdirectory+infilename+'_1_mimpfinder_downstreamregions.fasta'
 	datahandler2	= outdirectory+infilename+'_2_mimpfinder_translateddownstreamregions.fasta'
 	datahandler3	= outdirectory+infilename+'_3_mimpfinder_putativeORFs.fasta'
@@ -271,13 +288,14 @@ def MainDef(genomefastafile, directory, folder, combined_puteff_fasta, combined_
 	SignalPpath 	= str(sys.argv[8])
 	SignalP_threshold = str(sys.argv[9])
 
-	nrofcompletemimps, nrofincompletemimps = MimpFinder(infile, sc_prefix, motiefje, motiefje_rc, datahandler, distance) #ir_dict[i] = [m.start()+1, m.end(), seq_record.seq[m.start():m.end()], seq_record.seq[m.end():m.end()+distance]]
+	nrofcompletemimps, nrofincompletemimps = MimpFinder(infile, sc_prefix, motiefje, motiefje_rc, datahandler, distance, mimpsequencesfile, infilename) #ir_dict[i] = [m.start()+1, m.end(), seq_record.seq[m.start():m.end()], seq_record.seq[m.end():m.end()+distance]]
+	
 	Translator(datahandler, datahandler2, distance)
 	OrfFinder(datahandler2, min_prot_len, datahandler3, orfs, max_prot_len, max_d2m)
 	OrfWriter(datahandler3, signalpfile, min_prot_len, proteinoutfile, SignalPpath, SignalP_threshold)
 	ExtractOrfToFasta(proteinoutfile, infile, puteff_dnaseqs, infilename, puteff_logfile, combined_puteff_fasta, combined_puteff_logfile, filecounter, nrofcompletemimps, nrofincompletemimps, combined_puteff_logfile2, sc_prefix)
 	
-
+	return mimpsequencesfile
 
 	
 if __name__ == "__main__":
@@ -301,20 +319,21 @@ if __name__ == "__main__":
 	combined_puteff_logfile2 = combined_puteff_dir+'all_putative_effectors_log2.txt'
 	open(combined_puteff_logfile2, 'w').close() 
 	######################
-	
+	mimpsequencesfile_list = []
 	filecounter=0
  	for genomefastafile in os.listdir(directory_folder):
  		if genomefastafile.endswith(file_extensions): 
 			print "\n// executing mimpfinder_MetStop script for "+genomefastafile
-			MainDef(genomefastafile, directory, folder, combined_puteff_fasta, combined_puteff_logfile, filecounter, combined_puteff_logfile2, combined_puteff_dir)
+			mimpsequencesfile = MainDef(genomefastafile, directory, folder, combined_puteff_fasta, combined_puteff_logfile, filecounter, combined_puteff_logfile2, combined_puteff_dir)
+			mimpsequencesfile_list.append(mimpsequencesfile)
 			filecounter+=1
-	 
- 	else:
-		print '-'*20
-		print '// THE END'
-		print "No more files with extension '%s' were found in directory '%s'" % (file_extensions, (directory+folder))
-		print "Executed the script for %i files." % (filecounter)
-		print 'Total run time = %s' % (datetime.now()-startTime)
-		print '-'*20	
+	 	else:
+			print '-'*20
+			print '// THE END'
+			print "No more files with extension '%s' were found in directory '%s'" % (file_extensions, (directory+folder))
+			print "Executed the script for %i files." % (filecounter)
+			print 'Total run time = %s' % (datetime.now()-startTime)
+			print '-'*20	
 
-
+	ConcatenateMimpSequences_cmnd = 'cat '+' '.join(mimpsequencesfile_list)+' > '+combined_puteff_dir+'all_mimp_sequences.fasta'
+	print ConcatenateMimpSequences_cmnd, os.system(ConcatenateMimpSequences_cmnd)
