@@ -100,7 +100,7 @@ colnames(column_annotation) <- c("SIX genes", "Secreted enzymes")
 #rownames(NA/NaN/Inf in foreign function call (arg 11)
 rownames(column_annotation) <- colnames(data)
 
-pdf(file=hierclust_plot, width=12, height=16, pointsize = 8, family="Arial") # default pointsize = 16
+pdf(file=hierclust_plot, width=12, height=16, pointsize = 8) # default pointsize = 16 , family="Arial"
 
 heatmap.3(data, 
   Rowv=dendrogram,

@@ -25,7 +25,7 @@ SignalP_threshold			= '0.550'
 #blast variables
 PERC_IDENTITY_THRESH 		= '30'
 BLAST_task					= 'blastn' 		# or megablast
-buildblastdb				= 'no' 			# should a new blast db be built for the genome files encountered? (recommended for first time this script is run on a set of genomes)
+buildblastdb				= 'yes' 			# should a new blast db be built for the genome files encountered? (recommended for first time this script is run on a set of genomes)
 
 #clustering variables:
 distance_matrix_rows		= '1'
