@@ -32,14 +32,14 @@ def MimpFinder(infile, sc_prefix, motiefje, motiefje_rc, datahandler, distance, 
 		i=0
 		n=0
 		for m in match:
-			if m.end()+distance >= len(seq_record): #ensure that no value bigger than the supercontig length will arise 
+			if m.end()+distance >= len(seq_record): #ensure that no value bigger than the supercontig length will arise
 				end_pos_after_mimp = len(seq_record)
-			else: 
+			else:
 				end_pos_after_mimp = m.end()+distance
 			#ir_dict 0=start position, 1=end position, 2=motif sequence^location, 3=ORF-search-sequence
 			ir_dict[i] = [m.start()+1, m.end(), seq_record.seq[m.start():m.end()], seq_record.seq[m.end():end_pos_after_mimp]]
-			region_record = SeqRecord(seq=ir_dict[i][3], 
-				id='sc' +new_id+ '| '+ 'mimp_downstreamregion:' + str(ir_dict[i][1]+1) + '_' + str(end_pos_after_mimp) + ' (strand: +)'+ ' ' + str(ir_dict[i][2])+'^'+str(m.start()+1)+'-'+str(m.end()), 
+			region_record = SeqRecord(seq=ir_dict[i][3],
+				id='sc' +new_id+ '| '+ 'mimp_downstreamregion:' + str(ir_dict[i][1]+1) + '_' + str(end_pos_after_mimp) + ' (strand: +)'+ ' ' + str(ir_dict[i][2])+'^'+str(m.start()+1)+'-'+str(m.end()),
 				description='')
 			datahandler_list.append(region_record)
 			print '   >' + region_record.id
@@ -73,9 +73,9 @@ def MimpFinder(infile, sc_prefix, motiefje, motiefje_rc, datahandler, distance, 
 
 
 		for m in match_rc:
-			if m.start() <= distance: #ensure that no negative value will arise 
+			if m.start() <= distance: #ensure that no negative value will arise
 				start_pos_before_mimp = 0
-			else: 
+			else:
 				start_pos_before_mimp = m.start()-distance
 			ir_dict[n] = [m.start()+1, m.end(), seq_record.seq[m.start():m.end()], seq_record.seq[start_pos_before_mimp:m.start()]]
 			region_record = SeqRecord(seq=ir_dict[n][3].reverse_complement(),  #make RC of selected area of 2000bp
@@ -102,7 +102,7 @@ def MimpFinder(infile, sc_prefix, motiefje, motiefje_rc, datahandler, distance, 
 	print '// Motif found: ' + str(len(datahandler_list)) + 'x.'
 	SeqIO.write(datahandler_list, datahandler, 'fasta')
 	nrofcompletemimps=int(nrofcompletemimps)
-	print '\n// Wrote %s %sbp regions downstream of mimp IR motif to %s' % (nrofcompletemimps, distance, datahandler)
+	print '\n// Wrote %s %sbp regions downstream of mimp IR motif to %s' % (len(datahandler_list), distance, datahandler)
 	return nrofcompletemimps, nrofincompletemimps
 
 
@@ -119,7 +119,7 @@ def Translator(infile, datahandler2, distance):
 	print '-'*20
 	print '// Wrote %s translated %iaa entries to %s' % (len(datahandler_list2), (distance/3), datahandler2)
 	print '-'*20
-			
+
 def OrfFinder(datahandler2, min_prot_len, datahandler3, orfs, max_prot_len, max_d2m):
 	for seq_record in SeqIO.parse(datahandler2, 'fasta', IUPAC.protein):
 		genomic_region_up = int(seq_record.description.split('region:')[1].split('_')[0])
@@ -183,10 +183,10 @@ def OrfWriter(datahandler3, signalpfile, min_prot_len, proteinoutfile, SignalPpa
 								SPorfs.append(orfie)
 	sp.close()
 	print '   Total # of sequences matching the criteria: %i' % len(SPorfs)
-	
+
 	#Write all protein sequences that meet requirements (close to motif, longer than 30 aa and contains signal peptide) to proteinoutfile:
 	SeqIO.write(SPorfs, proteinoutfile, 'fasta')
- 
+
 def RunSignalP(datahandler3, signalpfile, organism, SignalPpath, SignalP_threshold):
 	print '// Running SignalP 4.1...'
 	cline = SignalPpath+' -t %s -f summary -u %s %s > %s' % (organism, SignalP_threshold, datahandler3, signalpfile)
@@ -198,12 +198,12 @@ def ExtractOrfToFasta(proteinsfasta, uberinfile, puteff_dnaseqs, genome, puteff_
 	open(puteff_dnaseqs, 'wb').close() 						#clear genomic DNA sequence fastafile
 	dnaoutfile = open(puteff_dnaseqs, 'a')
 	open(puteff_logfile, 'wb').close()
-	
+
 	logheader="genome\tputeff_supercontig\tgenomic_start_pos\tgenomic_end_pos\tdist2mimp\torientation\tprotlength\tD_value\tmimp_IR_seq\tmimp_IR_pos\tsignalpeptideseq\tproteinseq\tgenomicsequence\n"
 	logheader2="genome\tnr_of_complete_mimps\tnr_of_incomplete_mimps\tnr_of_put_eff_MetStop\n"
 	puteff_logfile_writer = open(puteff_logfile, 'a')
 	puteff_logfile_writer.write(logheader) #for each genome, write a log with a header.
-	
+
 	combined_putefffile = open(combined_puteff_fasta, 'a')
 	combined_puteff_logfile_writer = open(combined_puteff_logfile, 'a')
 	combined_puteff_logfile2_writer = open(combined_puteff_logfile2, 'a')
@@ -215,13 +215,13 @@ def ExtractOrfToFasta(proteinsfasta, uberinfile, puteff_dnaseqs, genome, puteff_
 	print '// Putative effectors found in genome: ' + genome
 	for seq_record in proteinsfastafile:
 		n+=1
-		
+
 		puteff_supercontig = seq_record.description.split('sc')[1].split('|')[0]
 		#MAKE SURE THE CONTIG IN THE ORIGINAL FASTA FILE IS LIKE THIS; contig_1 (space no comma behind it)
-		genomic_start_pos = int(seq_record.description.split('|')[1].split('-')[0]) 
+		genomic_start_pos = int(seq_record.description.split('|')[1].split('-')[0])
 		genomic_end_pos = int(seq_record.description.split('|')[1].split('-')[1].split('|')[0])
 		dist2mimp = seq_record.description.split('d2m:')[1].split('bp')[0]
-		orientation = seq_record.description.split('bp|')[1].split('|')[0]  
+		orientation = seq_record.description.split('bp|')[1].split('|')[0]
 		protlength = seq_record.description.split('|len:')[1].split('|')[0]
 		D_value = seq_record.description.split('D=.')[1].split(' ')[0]
 		mimp_IR_seq = seq_record.description.split(' ')[1].split('^')[0]
@@ -239,16 +239,16 @@ def ExtractOrfToFasta(proteinsfasta, uberinfile, puteff_dnaseqs, genome, puteff_
 				print '   contig_'+str(puteff_supercontig)+'\tposition '+str(genomic_start_pos)+'-'+str(genomic_end_pos)+'\t'+signalpeptideseq
 				putEff_fastaentry = ">"+str(n).zfill(4)+'.'+signalpeptideseq+"_"+genome+"_d2m"+str(dist2mimp)+"_len"+str(protlength)+"\n"+str(genomicsequence)+"\n\n"
 				dnaoutfile.write(putEff_fastaentry)
-				
+
 				puteff_attributes = [genome, puteff_supercontig, genomic_start_pos, genomic_end_pos, dist2mimp, orientation, protlength, D_value, mimp_IR_seq, mimp_IR_pos, signalpeptideseq, proteinseq, genomicsequence]
 				putEff_logentry = ('\t'.join(map(str,puteff_attributes)))+'\n'
 				puteff_logfile_writer.write(putEff_logentry)
-				
+
 				#combined_putefffile will collect all the output from the mimpsearch; this means there will be many redundant put effectors.
 				combined_putefffile.write(putEff_fastaentry)
 				combined_puteff_logfile_writer.write(putEff_logentry)
 	putEff_logentry2 = genome+'\t'+str(nrofcompletemimps)+'\t'+str(nrofincompletemimps)+'\t'+str(n)+'\n'
-	combined_puteff_logfile2_writer.write(putEff_logentry2)	
+	combined_puteff_logfile2_writer.write(putEff_logentry2)
 	dnaoutfile.close() #collects inside genome out folder all DNA sequences of the putative effectors
 	puteff_logfile_writer.close() #writes a log for all puteff found in the current genome (inside genome out folder)
 	combined_putefffile.close() #collects inside the out folder all DNA sequences of the putative effectors of all genomes that are being processed by the script.
@@ -277,7 +277,9 @@ def MainDef(genomefastafile, directory, folder, combined_puteff_fasta, combined_
 	puteff_logfile 	= outdirectory+infilename+'_8_mimpfinder_puteff_logfile.txt'
 	motiefje    	= 'TT[TA]TTGC..CCCACTG..'
 	motiefje_rc 	= '..CAGTGGG..GCAA[TA]AA'
-					   #..CAGT[GA]G[GA]..GCAA[TAG]AA (Mara Bergemann, 2008)
+	#motiefje    	= 'TT[TAC]TTGC[ACG][CTA]C[CT][CT]ACTG..' ## (Mara Bergemann, 2008)
+	#motiefje_rc 	= '..CAGT[GA][GA]G[GAT][TGC]GCAA[TAG]AA'
+
 	orfs 			= []
 
 
@@ -289,15 +291,15 @@ def MainDef(genomefastafile, directory, folder, combined_puteff_fasta, combined_
 	SignalP_threshold = str(sys.argv[9])
 
 	nrofcompletemimps, nrofincompletemimps = MimpFinder(infile, sc_prefix, motiefje, motiefje_rc, datahandler, distance, mimpsequencesfile, infilename) #ir_dict[i] = [m.start()+1, m.end(), seq_record.seq[m.start():m.end()], seq_record.seq[m.end():m.end()+distance]]
-	
+
 	Translator(datahandler, datahandler2, distance)
 	OrfFinder(datahandler2, min_prot_len, datahandler3, orfs, max_prot_len, max_d2m)
 	OrfWriter(datahandler3, signalpfile, min_prot_len, proteinoutfile, SignalPpath, SignalP_threshold)
 	ExtractOrfToFasta(proteinoutfile, infile, puteff_dnaseqs, infilename, puteff_logfile, combined_puteff_fasta, combined_puteff_logfile, filecounter, nrofcompletemimps, nrofincompletemimps, combined_puteff_logfile2, sc_prefix)
-	
+
 	return mimpsequencesfile
 
-	
+
 if __name__ == "__main__":
 	######################
 	directory_folder = sys.argv[1]
@@ -305,24 +307,24 @@ if __name__ == "__main__":
 	folder = sys.argv[1].split('/')[-1]
 	directory = directory_folder.split(folder)[0]
 	output_dir = sys.argv[2]
-	
+
 
 	file_extensions = (".fa", ".fasta", ".fas", "fna") # Specify the suffix of the genome files (.fa, .fasta, etc)
 	combined_puteff_dir = output_dir+'/01.mimpfinder/'+folder+'_MetStopOut/'
-	
+
 	if not os.path.exists(combined_puteff_dir):
 		os.makedirs(combined_puteff_dir)
 	combined_puteff_fasta	= combined_puteff_dir+'all_putative_effectors.fasta'
-	open(combined_puteff_fasta, 'w').close() 
+	open(combined_puteff_fasta, 'w').close()
 	combined_puteff_logfile = combined_puteff_dir+'all_putative_effectors_log.txt'
-	open(combined_puteff_logfile, 'w').close() 
+	open(combined_puteff_logfile, 'w').close()
 	combined_puteff_logfile2 = combined_puteff_dir+'all_putative_effectors_log2.txt'
-	open(combined_puteff_logfile2, 'w').close() 
+	open(combined_puteff_logfile2, 'w').close()
 	######################
 	mimpsequencesfile_list = []
 	filecounter=0
  	for genomefastafile in os.listdir(directory_folder):
- 		if genomefastafile.endswith(file_extensions): 
+ 		if genomefastafile.endswith(file_extensions):
 			print "\n// executing mimpfinder_MetStop script for "+genomefastafile
 			mimpsequencesfile = MainDef(genomefastafile, directory, folder, combined_puteff_fasta, combined_puteff_logfile, filecounter, combined_puteff_logfile2, combined_puteff_dir)
 			mimpsequencesfile_list.append(mimpsequencesfile)
@@ -333,7 +335,7 @@ if __name__ == "__main__":
 			print "No more files with extension '%s' were found in directory '%s'" % (file_extensions, (directory+folder))
 			print "Executed the script for %i files." % (filecounter)
 			print 'Total run time = %s' % (datetime.now()-startTime)
-			print '-'*20	
+			print '-'*20
 
 	ConcatenateMimpSequences_cmnd = 'cat '+' '.join(mimpsequencesfile_list)+' > '+combined_puteff_dir+'all_mimp_sequences.fasta'
 	print ConcatenateMimpSequences_cmnd, os.system(ConcatenateMimpSequences_cmnd)

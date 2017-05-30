@@ -73,13 +73,10 @@ if options.infolder == None:
 	print '\n[ERROR!]\nPlease specify a folder containing Fusarium oxysporum genomes: "-i [infolder]"'
 	print 'Use "-h" to see additional options.\n'
 	quit()
-else: 
+else:
 	genomedir = options.infolder
 	if " " in genomedir:
 		print '\n[ERROR!]\nThis input folder contains a space, which may lead to problems: '+genomedir+'\nExiting..'
-	if not os.path.exists(genomedir):
-		print '\n[ERROR!]\nThis input folder could not be found: '+genomedir+'\nExiting..'
-		quit()
 	genomefoldername = os.path.basename(os.path.normpath(genomedir))
 
 if options.outfolder == None:
@@ -89,15 +86,21 @@ else:
 
 if options.effector_fasta == None:
 	####[A. Identify mimp-terminal inverted repeats and find ORFs with a Signal Peptide within a downstream region]####
-	cline1a = ' '.join(['python', scriptdir+'/01a.mimpfinder_combine_to_putefflist_MetStop.py', genomedir, outputdir, contigprefix, distance_MetStop, min_prot_len, max_prot_len, max_d2m, SignalPpath, SignalP_threshold])
-	print cline1a, os.system(cline1a)
+	genomedirs = genomedir.split(',')
+	for genomedir in genomedirs:
+		if not os.path.exists(genomedir):
+			print '\n[ERROR!]\nThis input folder could not be found: '+genomedir+'\nExiting..'
+			quit()
 
-	if options.met_stop_prediction_only:
-		cline1b='No Augustus gene prediction will be executed.'
-		print cline1b
-	else:
-		cline1b = ' '.join(['python', scriptdir+'/01b.mimpfinder_combine_to_putefflist_AUGUSTUS.py', genomedir, outputdir, contigprefix, AUGUSTUS_path, '--AUGUSTUS_CONFIG_PATH='+AUGUSTUS_CONFIG_path, distance_Augustus, min_prot_len, max_prot_len, max_d2m, SignalPpath, SignalP_threshold])
-		print cline1b, os.system(cline1b)
+		cline1a = ' '.join(['python', scriptdir+'/01a.mimpfinder_combine_to_putefflist_MetStop.py', genomedir, outputdir, contigprefix, distance_MetStop, min_prot_len, max_prot_len, max_d2m, SignalPpath, SignalP_threshold])
+		print cline1a, os.system(cline1a)
+
+		if options.met_stop_prediction_only:
+			cline1b='No Augustus gene prediction will be executed.'
+			print cline1b
+		else:
+			cline1b = ' '.join(['python', scriptdir+'/01b.mimpfinder_combine_to_putefflist_AUGUSTUS.py', genomedir, outputdir, contigprefix, AUGUSTUS_path, '--AUGUSTUS_CONFIG_PATH='+AUGUSTUS_CONFIG_path, distance_Augustus, min_prot_len, max_prot_len, max_d2m, SignalPpath, SignalP_threshold])
+			print cline1b, os.system(cline1b)
 
 
 	####[B. Reduce redundancy in each putative effector output file:]####
