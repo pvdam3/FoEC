@@ -49,7 +49,7 @@ clustering_method_cols		= 'average'
 
 scriptdir = os.path.dirname(os.path.realpath(__file__))
 default_outputdir = scriptdir+'/output/output_'+starttime
-scriptname = format(__file__)
+scriptname = os.path.basename(__file__)
 
 usage = '\n'+'-'*20+'\npython FoEC.py -i [infolder] <options>\n'+'-'*20+'\n\
 This script will take a folder with genome fasta files, find mimps and mimp terminal inverted repeats \
