@@ -48,7 +48,7 @@ The pipeline relies a number of different 3rd party programs and libraries:
 * Python with the following package installed:
   * [BioPython](http://biopython.org/wiki/Download)
   * BCBio
-  * 
+
 N.B. For detailed installation instructions for MacOS, please see the [installation_instructions](installation_instructions.md) (thanks, Mara!).
 
 ## Configuration
