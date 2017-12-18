@@ -54,7 +54,7 @@ N.B. For detailed installation instructions for MacOS, please see the [installat
 ## Configuration
 You can set up the paths and variables necessary for your analysis directly in the [FoEC.py](FoEC.py) file.
 
-####paths
+#### paths
 * *blastdatabasedir* (a central location where you store your blast databases)
 * *contigprefix* (what string precedes the contig number in the fasta headers of your genome files? Suggestion: "contig_")
 * *AUGUSTUS_path* (direct path to your AUGUSTUS binary)
@@ -62,7 +62,7 @@ You can set up the paths and variables necessary for your analysis directly in t
 * *BLASTbindir* (where are your blast binaries stored?)
 * *SignalPpath* (direct path to your SignalP binary)
 
-####mimp-search variables
+#### mimp-search variables
 * *distance_MetStop* (sequence downstream of motif used for ORF prediction; default = 2500)
 * *distance_Augustus* (sequence downstream of motif used for ORF prediction; default = 5000)
 * *min_prot_len* (in aa; default = 30)
@@ -70,16 +70,17 @@ You can set up the paths and variables necessary for your analysis directly in t
 * *max_d2m* (max distance between mimp TIR and start-codon; default = 2000)
 * *SignalP_threshold* (D-value; default = 0.550)
 
-####blast variables
+#### blast variables
 * *PERC_IDENTITY_THRESH* (threshold percentage used to define if a candidate effector is present or absent, which is calculated as follows: the number of identical and correctly aligned nucleotides divided by the query length; default = 30)
 * *BLAST_task* ('blastn' or 'megablast')
 * *buildblastdb* (should a new blast db be built for the genome files encountered? (recommended for first time this script is run on a set of genomes) )
 
-####clustering variables:
+#### clustering variables:
 * *distance_matrix_rows* (row distance matrix; default = 1)
 * *clustering_method_rows* (row clustering method; default = average)
 * *distance_matrix_cols* (col distance matrix; default = 1)
 * *clustering_method_cols* (col clustering method; default = average)
+
   Please choose from the following distance matrices:
   * 1 = Jaccard index (1901) S3 coefficient of Gower & Legendre s1 = a / (a+b+c)
   * 2 = Simple matching coefficient of Sokal & Michener (1958) S4 coefficient of Gower & Legendre s2 = (a+d) / (a+b+c+d)
