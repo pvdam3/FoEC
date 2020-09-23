@@ -25,8 +25,8 @@ def MimpFinder(infile, sc_prefix, motiefje, motiefje_rc, datahandler, distance, 
 		else:
 			print  '-'*20 + '\nThis supercontig prefix was not found; add supercontig prefix as 1st argument..!\n' + '-'*20
 			quit()
-		match = re.finditer(motiefje, str(seq_record.seq))
-		match_rc = re.finditer(motiefje_rc, str(seq_record.seq))
+		match = re.finditer(motiefje, str(seq_record.seq), re.IGNORECASE)
+		match_rc = re.finditer(motiefje_rc, str(seq_record.seq), re.IGNORECASE)
 		ir_dict = {}
 		region_to_find_TIR_mate =''
 		i=0

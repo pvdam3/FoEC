@@ -23,28 +23,28 @@ def MimpFinder(infile, sc_prefix, motiefje, motiefje_rc, datahandler, distance):
 		else:
 			print  '-'*20 + '\nThis supercontig prefix was not found; add supercontig prefix as 1st argument..!\n' + '-'*20
 			quit()
-		match = re.finditer(motiefje, str(seq_record.seq))
-		match_rc = re.finditer(motiefje_rc, str(seq_record.seq))
+		match = re.finditer(motiefje, str(seq_record.seq), re.IGNORECASE)
+		match_rc = re.finditer(motiefje_rc, str(seq_record.seq), re.IGNORECASE)
 		ir_dict = {}
 		i=0
-		n=0 
+		n=0
 		for m in match:
-			if m.end()+distance >= len(seq_record): #ensure that no value bigger than the supercontig length will arise 
+			if m.end()+distance >= len(seq_record): #ensure that no value bigger than the supercontig length will arise
 				end_pos_after_mimp = len(seq_record)
-			else: 
+			else:
 				end_pos_after_mimp = m.end()+distance
 			#ir_dict 0=start position, 1=end position, 2=motif sequence^location, 3=ORF-search-sequence
 			ir_dict[i] = [m.start()+1, m.end(), seq_record.seq[m.start():m.end()], seq_record.seq[m.end():end_pos_after_mimp]]
-			region_record = SeqRecord(seq=ir_dict[i][3], 
-				id='contig' +new_id+ '_'+ 'mimp_downstreamregion' + str(ir_dict[i][1]+1) + '-' + str(end_pos_after_mimp) + '_strand1'+ '_' + str(ir_dict[i][2])+'^'+str(m.start()+1)+'-'+str(m.end()), 
+			region_record = SeqRecord(seq=ir_dict[i][3],
+				id='contig' +new_id+ '_'+ 'mimp_downstreamregion' + str(ir_dict[i][1]+1) + '-' + str(end_pos_after_mimp) + '_strand1'+ '_' + str(ir_dict[i][2])+'^'+str(m.start()+1)+'-'+str(m.end()),
 				description='')
 			datahandler_list.append(region_record)
 			print '   >' + region_record.id
-			
+
 			###[comment these lines to not search _upstream_ of a forward motif:]###
-			# if m.start() <= distance: #ensure that no negative value will arise 
+			# if m.start() <= distance: #ensure that no negative value will arise
 			# 	start_pos_before_mimp = 0
-			# else: 
+			# else:
 			# 	start_pos_before_mimp = m.start()-distance
 			# ir_dict[n] = [m.start()+1, m.end(), seq_record.seq[m.start():m.end()], seq_record.seq[start_pos_before_mimp:m.start()]]
 			# region_record = SeqRecord(seq=ir_dict[n][3].reverse_complement(),  #make RC of selected area of 2000bp
@@ -56,9 +56,9 @@ def MimpFinder(infile, sc_prefix, motiefje, motiefje_rc, datahandler, distance):
 			i+=1
 
 		for m in match_rc:
-			if m.start() <= distance: #ensure that no negative value will arise 
+			if m.start() <= distance: #ensure that no negative value will arise
 				start_pos_before_mimp = 0
-			else: 
+			else:
 				start_pos_before_mimp = m.start()-distance
 			ir_dict[n] = [m.start()+1, m.end(), seq_record.seq[m.start():m.end()], seq_record.seq[start_pos_before_mimp:m.start()]]
 			region_record = SeqRecord(seq=ir_dict[n][3].reverse_complement(),  #make RC of selected area of 2000bp
@@ -68,14 +68,14 @@ def MimpFinder(infile, sc_prefix, motiefje, motiefje_rc, datahandler, distance):
 			print '   >' + region_record.id
 
 			###[comment these lines to not search _upstream_ of a forward motif:]###
-			# if m.end()+distance >= len(seq_record): #ensure that no value bigger than the supercontig length will arise 
+			# if m.end()+distance >= len(seq_record): #ensure that no value bigger than the supercontig length will arise
 			# 	end_pos_after_mimp = len(seq_record)
-			# else: 
+			# else:
 			# 	end_pos_after_mimp = m.end()+distance
 			# #ir_dict 0=start position, 1=end position, 2=motif sequence^location, 3=ORF-search-sequence
 			# ir_dict[i] = [m.start()+1, m.end(), seq_record.seq[m.start():m.end()], seq_record.seq[m.end():end_pos_after_mimp]]
-			# region_record = SeqRecord(seq=ir_dict[i][3], 
-			# 	id='contig' +new_id+ '_'+ 'mimp_downstreamregion' + str(ir_dict[i][1]+1) + '-' + str(end_pos_after_mimp) + '_strand1'+ '_' + str(ir_dict[i][2])+'^'+str(m.start()+1)+'-'+str(m.end()), 
+			# region_record = SeqRecord(seq=ir_dict[i][3],
+			# 	id='contig' +new_id+ '_'+ 'mimp_downstreamregion' + str(ir_dict[i][1]+1) + '-' + str(end_pos_after_mimp) + '_strand1'+ '_' + str(ir_dict[i][2])+'^'+str(m.start()+1)+'-'+str(m.end()),
 			# 	description='')
 			# datahandler_list.append(region_record)
 			# print '   >' + region_record.id
@@ -90,9 +90,9 @@ def PredictGenes(datahandler, datahandler2, datahandler3a, datahandler3b, dataha
 	ORF_list = []
 	CDS_list = []
 	protein_list = []
-	
+
 	genecounter = 0
-	
+
 	print '// Running Augustus 3.1...'
 	print AUGUSTUS_command
 	cline = AUGUSTUS_command+' --species=fusarium --singlestrand=true %s > %s' % (datahandler, datahandler2) #--singlestrand=true
@@ -101,7 +101,7 @@ def PredictGenes(datahandler, datahandler2, datahandler3a, datahandler3b, dataha
 	in_seq_handle = open(datahandler)
 	seq_dict = SeqIO.to_dict(SeqIO.parse(in_seq_handle, "fasta"))
 	in_seq_handle.close()
- 
+
 	in_handle = open(datahandler2)
 
 	for rec in GFF.parse(in_handle, base_dict=seq_dict):
@@ -109,13 +109,13 @@ def PredictGenes(datahandler, datahandler2, datahandler3a, datahandler3b, dataha
 		feature_ids =[]
 		for feature in rec.features:
 			if feature.id != '': feature_ids.append(feature.id) # find out how many genes were predicted in this 2.5kb region
-		
-		for feature in rec.features: 
+
+		for feature in rec.features:
 			#print feature.strand
 			for feature_id in feature_ids:
 				if feature.id == feature_id: # each gene is iterated in the gff file
 					print "   "+"_"*20
-					
+
 					print '   gene found:', feature.id, feature.location, feature.strand
 					#print feature.extract(rec).seq
 					CDS = '' ##
@@ -125,7 +125,7 @@ def PredictGenes(datahandler, datahandler2, datahandler3a, datahandler3b, dataha
 						#print sub_feature.type, sub_feature.location
 						if sub_feature.type == 'CDS':
 							gene_orientation = sub_feature.strand # gene orientation compared to 2.5kb region > always with IR as 5' end
-							
+
 							nrofexons +=1
 							if gene_orientation == 1:
 								CDS+=sub_feature.extract(rec).seq #add all exons together to form full CDS
@@ -135,9 +135,9 @@ def PredictGenes(datahandler, datahandler2, datahandler3a, datahandler3b, dataha
 					#if str(CDS[:3]) == 'ATG':
 					#print 'gene orientation:',gene_orientation
 					#print 'exonlocations:', exonlocations
-					nrofintrons = nrofexons-1 
-					
-					all_locations = []	
+					nrofintrons = nrofexons-1
+
+					all_locations = []
 					if nrofexons > 1: #are there any introns?
 						for exonlocation in exonlocations:
 							all_locations.append(exonlocation[0])
@@ -145,14 +145,14 @@ def PredictGenes(datahandler, datahandler2, datahandler3a, datahandler3b, dataha
 					intronlocations = []
 					for i in range(nrofintrons):
 						intronlocations.append([all_locations[(i*2)+1], all_locations[(i+1)*2]]) #extract the coordinates of each intron
-					
+
 					ORF = '' ##
 					for e in range(len(intronlocations)):
 						ORF += rec.seq[exonlocations[e][0]:exonlocations[e][1]].upper()
 						ORF += rec.seq[intronlocations[e][0]:intronlocations[e][1]].lower()
 					ORF += rec.seq[exonlocations[len(exonlocations)-1][0]:exonlocations[len(exonlocations)-1][1]].upper()
-					
-					
+
+
 					contig	= rec.id.split('contig')[1].split('_mimp')[0]
 					region_start	= rec.id.split('region')[1].split('_')[0].split('-')[0]
 					#print 'region_start:', region_start
@@ -165,36 +165,36 @@ def PredictGenes(datahandler, datahandler2, datahandler3a, datahandler3b, dataha
 					gene_start_relative		= feature.location.start
 					gene_end_relative		= feature.location.end
 					if gene_orientation == 1:
-						if strand == 1:	
+						if strand == 1:
 							real_orientation = 1  #gene is found on coding strand downstream of MIMP IR
 							gene_start_absolute		= int(region_start)+int(gene_start_relative)
 							gene_end_absolute		= int(region_start)+int(gene_end_relative)-1
-						elif strand == -1:  
+						elif strand == -1:
 							real_orientation = -1 #gene is found on other strand upstream of MIMP IR
 							gene_start_absolute		= int(region_end)-int(gene_start_relative)
 							gene_end_absolute		= int(region_end)-int(gene_end_relative)+1
 					elif gene_orientation == -1:
 						ORF = ORF.reverse_complement()
 						CDS = CDS.reverse_complement()
-						if strand == 1:	
+						if strand == 1:
 							real_orientation = -1
 							gene_start_absolute		= int(region_start)+int(gene_start_relative)
 							gene_end_absolute		= int(region_start)+int(gene_end_relative)-1
-						elif strand == -1: 
+						elif strand == -1:
 							real_orientation = 1
 							gene_start_absolute		= int(region_end)-int(gene_start_relative)
 							gene_end_absolute		= int(region_end)-int(gene_end_relative)+1
 					proteinseq = CDS.translate() ##
 					proteinseq = proteinseq[:-1] #trim off the STOP codon ('*')
-					
+
 					#new_fastaheader = feature.id.split('.t')[0]+'_'+genome+'_contig'+contig+'_'+str(gene_start_absolute)+'-'+str(gene_end_absolute)+'_'+str(real_orientation)+'_d2m'+str(gene_start_relative)+'_'+str(mimp_IR_seq)+'_'+mimp_IR_loc+'_'+str(nrofexons)+'exons'
 					#new_fastaheader_forsignalp = feature.id.split('.t')[0]+'_'+genome+'_contig'+contig+'_'+str(gene_start_absolute)+'-'+str(gene_end_absolute)
-					
+
 					new_fastaheader_id = 'sc'+contig+'|'+str(gene_start_absolute)+'-'+str(gene_end_absolute)+'|'+'d2m:'+str(gene_start_relative)+'bp|'+str(real_orientation)+'|f?'+'|len:'+str(len(proteinseq))
 					new_fastaheader_description = str(mimp_IR_seq)+'^'+mimp_IR_loc+'_'+str(nrofexons)+'_exons'
 					print new_fastaheader_id, new_fastaheader_description
 					# SignalP only accepts short fastaheaders!!
-					
+
 					#print proteinseq[:1]
 					if str(proteinseq[:1]) == 'M':
 						if len(proteinseq) > min_prot_len:
@@ -211,8 +211,8 @@ def PredictGenes(datahandler, datahandler2, datahandler3a, datahandler3b, dataha
 	SeqIO.write(ORF_list, datahandler3a, 'fasta')
 	SeqIO.write(CDS_list, datahandler3b, 'fasta')
 	SeqIO.write(protein_list, datahandler3c, 'fasta')
-	
-def RunSignalP(datahandler3c, datahandler4, SignalPpath, SignalP_threshold): 
+
+def RunSignalP(datahandler3c, datahandler4, SignalPpath, SignalP_threshold):
 	print '// Running SignalP 4.1...'
 	cline = SignalPpath+' -t euk -f summary -u %s %s > %s' % (SignalP_threshold, datahandler3c, datahandler4)
 	os.system(cline)
@@ -242,7 +242,7 @@ def ParseSignalP(datahandler3a, datahandler3b, datahandler3c, datahandler4, data
 	sp.close()
 	print '   Total # of sequences matching the criteria: %i' % len(SP_positives)
 	print ''
-	
+
 	#Write all protein sequences that meet requirements (close to motif, longer than 30 aa and contains signal peptide) to datahandler5c:
 	SeqIO.write(SP_positives, datahandler5c, 'fasta')
 
@@ -270,20 +270,20 @@ def ParseSignalP(datahandler3a, datahandler3b, datahandler3c, datahandler4, data
 				SP_positives_CDS.append(new_rec)
 	SeqIO.write(SP_positives_CDS, datahandler5b, 'fasta')
 
-				
-	
+
+
 
 def ExtractOrfToFasta(proteinsfasta, uberinfile, puteff_dnaseqs, genome, puteff_logfile, combined_puteff_fasta, combined_puteff_logfile, filecounter, combined_puteff_logfile2, sc_prefix):
 	#EXTRACT GENOMIC SEQUENSE:
 	open(puteff_dnaseqs, 'wb').close() 						#clear genomic DNA sequence fastafile
 	dnaoutfile = open(puteff_dnaseqs, 'a')
 	open(puteff_logfile, 'wb').close()
-	
+
 	logheader="genome\tputeff_supercontig\tgenomic_start_pos\tgenomic_end_pos\tdist2mimp\torientation\tprotlength\tnrofexons\tD_value\tmimp_IR_seq\tmimp_IR_pos\tsignalpeptideseq\tproteinseq\tgenomicsequence\n"
 	logheader2="genome\tnr_of_put_eff_Augustus\n"
 	puteff_logfile_writer = open(puteff_logfile, 'a')
 	puteff_logfile_writer.write(logheader)
-	
+
 	combined_putefffile = open(combined_puteff_fasta, 'a')
 	combined_puteff_logfile_writer = open(combined_puteff_logfile, 'a')
 	combined_puteff_logfile2_writer = open(combined_puteff_logfile2, 'a')
@@ -297,10 +297,10 @@ def ExtractOrfToFasta(proteinsfasta, uberinfile, puteff_dnaseqs, genome, puteff_
 		n+=1
 		puteff_supercontig = seq_record.description.split('sc')[1].split('|')[0]
 		#MAKE SURE THE CONTIG IN THE ORIGINAL FASTA FILE IS LIKE THIS; contig_1 (space no comma behind it)
-		genomic_start_pos = int(seq_record.description.split('|')[1].split('-')[0]) 
+		genomic_start_pos = int(seq_record.description.split('|')[1].split('-')[0])
 		genomic_end_pos = int(seq_record.description.split('|')[1].split('-')[1].split('|')[0])
 		dist2mimp = seq_record.description.split('d2m:')[1].split('bp')[0]
-		orientation = seq_record.description.split('bp|')[1].split('|')[0]  
+		orientation = seq_record.description.split('bp|')[1].split('|')[0]
 		protlength = seq_record.description.split('|len:')[1].split('|')[0]
 		D_value = seq_record.description.split('D=.')[1].split(' ')[0]
 		mimp_IR_seq = seq_record.description.split(' ')[1].split('^')[0]
@@ -315,36 +315,36 @@ def ExtractOrfToFasta(proteinsfasta, uberinfile, puteff_dnaseqs, genome, puteff_
 			if "_" in sc_id:
  				sc_id = sc_id.split("_")[0]
 			if sc_id == puteff_supercontig:
-				
+
 				genomicsequence = sc.seq[genomic_start_pos-1:genomic_end_pos]
-				
+
 				print '   contig_'+str(puteff_supercontig)+'\tposition '+str(genomic_start_pos)+'-'+str(genomic_end_pos)+'\t'+signalpeptideseq
 				if genomic_start_pos > genomic_end_pos:
 					genomicsequence = sc.seq[genomic_end_pos-1:genomic_start_pos]
-					
-				
-				
+
+
+
 				putEff_fastaentry = ">"+str(n).zfill(3)+'.'+signalpeptideseq+"_"+genome+"_d2m"+str(dist2mimp)+"_len"+str(protlength)+"\n"+str(genomicsequence)+"\n\n"
 				dnaoutfile.write(putEff_fastaentry)
-				
+
 				puteff_attributes = [genome, puteff_supercontig, genomic_start_pos, genomic_end_pos, dist2mimp, orientation, protlength, nrofexons, D_value, mimp_IR_seq, mimp_IR_pos, signalpeptideseq, proteinseq, genomicsequence]
 				putEff_logentry = ('\t'.join(map(str,puteff_attributes)))+'\n'
 				puteff_logfile_writer.write(putEff_logentry)
-				
+
 				#combined_putefffile will collect all the output from the mimpsearch; this means there will be many redundant put effectors.
 				combined_putefffile.write(putEff_fastaentry)
 				combined_puteff_logfile_writer.write(putEff_logentry)
 	putEff_logentry2 = genome+'\t'+str(n)+'\n'
-	combined_puteff_logfile2_writer.write(putEff_logentry2)			
+	combined_puteff_logfile2_writer.write(putEff_logentry2)
 	dnaoutfile.close() #collects inside genome out folder all DNA sequences of the putative effectors
 	puteff_logfile_writer.close() #writes a log for all puteff found in the current genome (inside genome out folder)
 	combined_putefffile.close() #collects inside the out folder all DNA sequences of the putative effectors of all genomes that are being processed by the script.
 	combined_puteff_logfile_writer.close() #writes a general log file with more details of the putative effectors identified
 	print '-'*20
 	print "// Finished with genome of %s; wrote %i genomic DNA sequences of putEff ORFs to %s" % (genome, n, puteff_dnaseqs)
-	
 
-			
+
+
 
 
 def MainDef(genome, genomefastafile, directory, folder, combined_puteff_fasta, combined_puteff_logfile, filecounter, combined_puteff_logfile2, combined_puteff_dir):
@@ -387,10 +387,10 @@ def MainDef(genome, genomefastafile, directory, folder, combined_puteff_fasta, c
 	RunSignalP(datahandler3c, datahandler4, SignalPpath, SignalP_threshold)
 	ParseSignalP(datahandler3a, datahandler3b, datahandler3c, datahandler4, datahandler5a, datahandler5b, datahandler5c, min_prot_len)
 	ExtractOrfToFasta(datahandler5c, infile, datahandler6, infilename, puteff_logfile, combined_puteff_fasta, combined_puteff_logfile, filecounter, combined_puteff_logfile2, sc_prefix)
-	
 
 
-	
+
+
 if __name__ == "__main__":
 
 	######################
@@ -405,27 +405,25 @@ if __name__ == "__main__":
 	if not os.path.exists(combined_puteff_dir):
 		os.makedirs(combined_puteff_dir)
 	combined_puteff_fasta	= combined_puteff_dir+'all_putative_effectors.fasta'
-	open(combined_puteff_fasta, 'w').close() 
+	open(combined_puteff_fasta, 'w').close()
 	combined_puteff_logfile = combined_puteff_dir+'all_putative_effectors_log.txt'
 	open(combined_puteff_logfile, 'w').close()
 	combined_puteff_logfile2 = combined_puteff_dir+'all_putative_effectors_log2.txt'
-	open(combined_puteff_logfile2, 'w').close() 
+	open(combined_puteff_logfile2, 'w').close()
 	######################
-	
+
 	filecounter=0
  	for genomefastafile in os.listdir(directory_folder):
- 		if genomefastafile.endswith(file_extensions): 
+ 		if genomefastafile.endswith(file_extensions):
  			genome = genomefastafile.split('.fa')[0]
 			print "\n// executing mimpfinder_AUGUSTUS script for "+genomefastafile
 			MainDef(genome, genomefastafile, directory, folder, combined_puteff_fasta, combined_puteff_logfile, filecounter, combined_puteff_logfile2, combined_puteff_dir)
 			filecounter+=1
-	 
+
  	else:
 		print '-'*20
 		print '// THE END'
 		print "No more files with extension '%s' were found in directory '%s'" % (file_extensions, (directory+folder))
 		print "Executed the script for %i files." % (filecounter)
 		print 'Total run time = %s' % (datetime.now()-startTime)
-		print '-'*20	
-
-
+		print '-'*20
