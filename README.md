@@ -2,7 +2,7 @@
 This script will take a folder with genome fasta files, find mimps and mimp terminal inverted repeats and try to identify candidate effectors. These will be clustered into families and then BLASTed against each of the genomes to identify presence (1) or absence (0). These binary patterns will be hierarchically clustered in R to produce a clustering figure using "heatmap.3.R".
 
 ## updates
-  * 23-9-2020: re.IGNORECASE has been added to the re.finditer() function to make sure non-capitalized nucleotides are also identified in the mimp TIR search in scripts 01a and 01b.
+  * 23-9-2020: re.IGNORECASE has been added to the re.finditer() function to make sure lowercase nucleotides are also identified in the mimp TIR search in scripts 01a and 01b.
 
 ## Concept
 The following steps are executed in this pipeline (graphical overview available in [pipeline_overview.pdf](pipeline_overview.pdf)):
