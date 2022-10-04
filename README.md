@@ -1,3 +1,5 @@
+### A rewritten version (v2) of the F. oxysporum Effector Clustering pipeline was developed, and is available in a separate repository via https://github.com/pvdam3/FoEC2
+
 # FoEC
 This script will take a folder with genome fasta files, find mimps and mimp terminal inverted repeats and try to identify candidate effectors. These will be clustered into families and then BLASTed against each of the genomes to identify presence (1) or absence (0). These binary patterns will be hierarchically clustered in R to produce a clustering figure using "heatmap.3.R".
 
